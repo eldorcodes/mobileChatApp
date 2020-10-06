@@ -10,7 +10,7 @@ const ChatMessages = ({userId, msg, img}) => {
 
     return (
        <Card transparent 
-       style={{maxWidth:deviceWidth / 2 + 10,
+       style={{maxWidth:150,
        alignSelf: isCurrentUser ? "flex-end":"flex-start"}}>
            <View style={[styles.chatContainer,
         isCurrentUser && {
@@ -22,13 +22,13 @@ const ChatMessages = ({userId, msg, img}) => {
                     <CardItem>
                     <TouchableOpacity>
                         <Image source={{uri:img}} resizeMode="cover"
-                        style={{height:200,width:deviceWidth/2}}/>
+                        style={{height:100,width:100}}/>
                     </TouchableOpacity>
                 </CardItem>
                 ):(<CardItem>
                     <TouchableOpacity>
                         <Image source={userLogo} resizeMode="cover"
-                        style={{height:200,width:deviceWidth/2}}/>
+                        style={{height:100,width:100}}/>
                     </TouchableOpacity>
                 </CardItem>)}
             
