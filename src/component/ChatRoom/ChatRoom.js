@@ -1,7 +1,9 @@
 import React,{useLayoutEffect, useState, useEffect, Fragment} from 'react';
 import { View, Text, TouchableWithoutFeedback, 
-    SafeAreaView , StyleSheet, Button, 
+    SafeAreaView , StyleSheet, 
     Alert, FlatList, Keyboard} from 'react-native';
+import {Icon, Button} from 'native-base';
+import ImagePicker from "react-native-image-picker";
 import MessageInput from '../MessageInput/MessageInput';
 import ChatMessages from '../ChatMessages/ChatMessages';
 import firebase from '../../firebase/config';
@@ -47,15 +49,43 @@ const ChatRoom = ({route, navigation}) => {
         // store messages based on user ID
         setMsgValue("")
         if (msgValue) {
-            SenderMessages(msgValue,currentUserId,guestUserId,img)
+            SenderMessages(msgValue,currentUserId,guestUserId,"")
             .then(() => {})
             .catch((err) => Alert.alert(err))
             // receiver messages
-            ReceiverMessages(msgValue,currentUserId, guestUserId,img)
+            ReceiverMessages(msgValue,currentUserId, guestUserId,"")
             .then(() => {})
             .catch((err) => Alert.alert(err))
         }
     }
+    const handleCamera = () => {
+        const option = {
+          storageOptions: {
+            skipBackup: true,
+          },
+        };
+    
+        ImagePicker.showImagePicker(option, (response) => {
+          if (response.didCancel) {
+            console.log("User cancel image picker");
+          } else if (response.error) {
+            console.log(" image picker error", response.error);
+          } else {
+            // Base 64
+            let source = "data:image/jpeg;base64," + response.data;
+    
+            SenderMessages(msgValue, currentUserId, guestUserId, source)
+              .then(() => {})
+              .catch((err) => alert(err));
+    
+            // * guest user
+    
+            ReceiverMessages(msgValue, currentUserId, guestUserId, source)
+              .then(() => {})
+              .catch((err) => alert(err));
+          }
+        });
+      };
     return (
             <TouchableWithoutFeedback style={{flex:1}}
             onPress={Keyboard.dismiss}>
@@ -74,12 +104,18 @@ const ChatRoom = ({route, navigation}) => {
                     <View style={styles.msgContainer}>
                     <MessageInput
                         style={styles.input} 
-                        placeholder="type a message"
+                        placeholder="Type a message"
                         value={msgValue}
                         onChangeText={(text) => handleOnChange(text)}/>
-                        <Button title="SEND"
-                        style={styles.btn}
-                        onPress={() => handleSend()}/>
+                        
+                        <Icon style={styles.camera}
+                        onPress={() => handleCamera()}
+                        name="camera" type="AntDesign"/>
+
+                        <Icon style={styles.sendBtn}
+                        onPress={() => handleSend()}
+                        name="arrow-forward" 
+                        type="MaterialIcons"/>
                     </View>
                 </Fragment>
                 </SafeAreaView>
@@ -90,7 +126,7 @@ const styles = StyleSheet.create({
     input: {
         borderTopLeftRadius: 20,
         borderBottomLeftRadius: 20,
-        width: "70%"
+        width: "50%"
     },
     container: {
         flex: 1,
@@ -100,7 +136,17 @@ const styles = StyleSheet.create({
         flexDirection: "row",
         alignItems:"center",
         alignContent:"center",
-        paddingRight:30
+        paddingRight:50
+    },
+    sendBtn: {
+        marginTop: 10,
+        padding:5,
+        color: "white"
+    },
+    camera: {
+        marginTop:10,
+        padding:5,
+        color:"white"
     }
 })
 export default ChatRoom

@@ -5,7 +5,7 @@ import UserLogo from '../../utility/images/userlogo.png';
 
 const UserProfile = ({route,navigation}) => {
     const {params} = route;
-    const {name,img} = params;
+    const {name,gender,age,img} = params;
 
     return (
         <Fragment>
@@ -20,6 +20,7 @@ const UserProfile = ({route,navigation}) => {
                     <Thumbnail style={styles.image} 
                     source={UserLogo} resizeMode="cover"/>
                     <Text style={styles.text}>{name}</Text>
+                    <Text style={styles.text}>{gender}, {age}</Text>
                 </View>
             )}
         </Fragment>

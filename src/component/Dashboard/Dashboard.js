@@ -1,24 +1,36 @@
-import React, { useContext, useState, useEffect } from 'react';
-import { SafeAreaView,View ,Text, Button, Alert, FlatList } from 'react-native';
+import React, { useContext, useState, useEffect, useLayoutEffect } from 'react';
+import { Text, Alert, FlatList } from 'react-native';
+import {Container,Content, Footer, FooterTab, Button, Icon} from 'native-base';
 import firebase from '../../firebase/config';
 import {uid} from '../../utility/constants/const';
 import {Store} from '../../redux/store/store';
 import {STARTER, FINISH} from '../../redux/actions/types';
 import ShowUsers from '../users/showUsers';
-import Profile from '../Profile/Profile';
-import ImagePicker from 'react-native-image-picker';
-import { UpdateUser } from '../../auth';
+import { LogBox } from 'react-native';
+
+LogBox.ignoreLogs([
+    'VirtualizedLists should never be nested', 
+    // TODO: Remove when fixed
+  ])
 
 const Dashboard = ({navigation}) => {
     const globalState = useContext(Store)
     const {dispatchLoaderAction} = globalState;
 
+    useLayoutEffect(() => {
+        navigation.setOptions({
+        headerTitle: <Text>Users</Text>
+        })
+    },[navigation])
+
     const [userInfo,setUserInfo] = useState({
         id: '',
         name: '',
+        gender: '',
+        age: '',
         userImg: ''
     })
-    const {name,userImg} = userInfo;
+    const {name,gender,age,userImg} = userInfo;
     const [allUsers,setAllUsers] = useState([])
     useEffect(() => {
         dispatchLoaderAction({
@@ -30,17 +42,23 @@ const Dashboard = ({navigation}) => {
                 let currentUser = {
                     id: '',
                     name: '',
+                    gender:'',
+                    age:'',
                     userImg: ''
                 }
                 allUsers.forEach((aUser) => {
                     if (uid === aUser.val().uid) {
                         currentUser.id = uid;
                         currentUser.name = aUser.val().name;
+                        currentUser.gender = aUser.val().gender;
+                        currentUser.age = aUser.val().age;
                         currentUser.userImg = aUser.val().userImg;
                     } else {
                         users.push({
                             id: aUser.val().uid,
                             name: aUser.val().name,
+                            gender: aUser.val().gender,
+                            age: aUser.val().age,
                             userImg: aUser.val().userImg
                         })
                     }
@@ -59,46 +77,12 @@ const Dashboard = ({navigation}) => {
             Alert.alert(error)
         }
     },[])
-    // handle select photo tapped method
-    const selectPhotoTapped = () => {
-        const option = {
-            storageOptions: {
-                skipBackup:true
-            }
-        }
-        ImagePicker.launchImageLibrary(option,(res) => {
-            if (res.didCancel) {
-                console.log('User canceled image picker')
-            } 
-            else if(res.error){
-                console.log(res.error)
-            }
-            else {
-                // upload image
-                let src = `data:image/jpeg;base64,${res.data}`;
-                dispatchLoaderAction({
-                    type: STARTER
-                })
-                UpdateUser(uid,src)
-                .then(() => {
-                    // success
-                    setUserInfo({
-                        ...userInfo,
-                        userImg:src
-                    })
-                    dispatchLoaderAction({
-                        type: FINISH
-                    })
-                }).catch((err) => {
-                    Alert.alert(err)
-                })
-            }
-        })
-    }
     // handle onNameTap event
-    const nameTap = (name,userImg) => {
+    const nameTap = (name,gender,age,userImg) => {
         navigation.navigate('UserProfile',{
             name,
+            gender,
+            age,
             img: userImg
         })
     }
@@ -111,36 +95,48 @@ const Dashboard = ({navigation}) => {
         })
     }
     return (
-        <SafeAreaView>
-            <FlatList alwaysBounceVertical={false} 
+           <Container>
+           <Content>
+           <FlatList 
+            alwaysBounceVertical={false} 
             data={allUsers}
-            keyExtractor={(_,index) => {index.toString()}}  
-            ListHeaderComponent={<Profile 
-            onEditImgTap={() => selectPhotoTapped()}
-                img={userImg} name={name}/>}
-            renderItem={({item}) => (
-                <ShowUsers 
-                name={item.name} 
+            key={(item) => {item.id}}
+            keyExtractor={(_,index) => {index.toString()}} 
+                renderItem={({item}) => (
+            <ShowUsers 
+                name={item.name}
+                gender={item.gender}
+                age={item.age} 
                 img={item.userImg}
-                onNameTap={() => nameTap(item.name,item.userImg)}
+                onNameTap={() => nameTap(item.name,item.gender,item.age,item.userImg)}
                 goToChatRoom={() => openChatRoom(item.name,item.userImg,item.id)}/>
             )}/>
+            
+           </Content>
+           <Footer>
+          <FooterTab>
+            <Button>
+              <Icon name="apps" type="MaterialIcons"/>
+            </Button>
+            <Button active>
+              <Icon active name="chat-bubble" type="MaterialIcons"/>
+            </Button>
+            <Button>
+              <Icon name="person" type="MaterialIcons"
+              onPress={() => {
+                  navigation.navigate('MainProfile',{
+                      id:uid,
+                      name:name,
+                      gender:gender,
+                      age:age,
+                      img:userImg
 
-            <Button title="logout" 
-            onPress={() => Alert.alert('Logout','Do you want to log out?',[
-                {
-                    text: 'Yes',
-                    onPress: () => firebase.auth().signOut().then(() => {
-                        navigation.replace('Login')
-                    }).catch((err) => {
-                        Alert.alert(err)
-                    })
-                },
-                {
-                    text: 'No'
-                }
-            ],{cancelable:true})}/>
-        </SafeAreaView>
+                  })
+              }}/>
+            </Button>
+          </FooterTab>
+        </Footer>
+           </Container>
     )
 }
 

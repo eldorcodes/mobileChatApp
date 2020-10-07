@@ -1,35 +1,31 @@
 import React from 'react';
 import { View, Text, TouchableOpacity, StyleSheet } from 'react-native';
-import {Card,CardItem,Left,Body,Thumbnail,Right} from 'native-base';
+import {List,ListItem,Left,Body,Thumbnail,Right,Icon} from 'native-base';
 import UserLogo from '../../utility/images/userlogo.png';
 
-const ShowUsers = ({name,img,onImgTap,onNameTap,goToChatRoom}) => {
+const ShowUsers = ({name,gender,age,img,onNameTap,goToChatRoom}) => {
     return (
-        <Card>
-            <CardItem>
-                <Left>
-                    <TouchableOpacity onPress={onImgTap}>
-                        {
-                            img ? (
-                                <Thumbnail source={{uri:img}} 
-                                resizeMode="cover"/>
-                            ) : (
-                            <Thumbnail source={UserLogo} 
-                            resizeMode="cover"/>
-                            )
-                        }
-                    </TouchableOpacity>
-                    <Body>
-                    <Text onPress={onNameTap}>{name}</Text>
-                    </Body>
-                </Left>
-                <Right>
-                    <Body>
-                        <Text onPress={goToChatRoom}>Chat</Text>
-                    </Body>
-                </Right>
-            </CardItem>
-        </Card>
+        <List>
+            <ListItem thumbnail>
+              <Left>
+                <TouchableOpacity onPress={onNameTap}>
+                {img? (
+                    <Thumbnail source={{uri:img}} />
+                ):(
+                    <Thumbnail source={UserLogo} />
+                )}
+                </TouchableOpacity>
+              </Left>
+              <Body>
+                <Text onPress={onNameTap}>{name}</Text>
+                <Text note>{gender} {age}</Text>
+              </Body>
+              <Right>
+              <Icon onPress={goToChatRoom} 
+                    name="arrow-forward" type="MaterialIcons"/>
+              </Right>
+            </ListItem>
+          </List>
     )
 }
 

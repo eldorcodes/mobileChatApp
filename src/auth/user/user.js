@@ -1,11 +1,13 @@
 import firebase from '../../firebase/config';
 import { Alert } from 'react-native';
 
-export const AddUser = async (name,email,uid,userImg) => {
+export const AddUser = async (name,gender,age,email,uid,userImg) => {
     try {
         return await firebase.database().ref(`users/${uid}`)
         .set({
             name:name,
+            gender:gender,
+            age:age,
             email:email,
             uid:uid,
             userImg:userImg

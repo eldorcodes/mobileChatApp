@@ -2,7 +2,8 @@ import * as React from 'react';
 import { createStackNavigator } from "@react-navigation/stack";
 import { NavigationContainer } from "@react-navigation/native";
 import { Dashboard, SignUp, Login, 
-    AuthHelper, UserProfile, ChatRoom } from "../component/main";
+    AuthHelper, UserProfile, 
+    ChatRoom, MainProfile } from "../component/main";
 
 const Stack = createStackNavigator();
 
@@ -32,7 +33,14 @@ function Navigation() {
                     headerShown: false
                 }}>
                 </Stack.Screen>
-                <Stack.Screen name="Dashboard" component={Dashboard} options={{
+                <Stack.Screen name="Dashboard" component={Dashboard} 
+                options={{
+                    headerLeft: null
+                }}>
+                </Stack.Screen>
+
+                <Stack.Screen name="MainProfile" 
+                component={MainProfile} options={{
                     headerLeft: null
                 }}>
                 </Stack.Screen>

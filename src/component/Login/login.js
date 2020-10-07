@@ -1,8 +1,9 @@
 import React, {useState, useContext} from 'react';
-import { SafeAreaView, Text, StyleSheet,
-    Button, TextInput, Image, Alert, 
+import { SafeAreaView, Text, StyleSheet, TextInput, Image, Alert, 
     TouchableWithoutFeedback,
     Keyboard} from 'react-native';
+import { Container, Header, Content,
+    Form, Item, Input, Label, Button, Icon } from 'native-base';
 import Logo from '../../utility/images/chat.png'
 import { Store } from '../../redux/store/store';
 import { STARTER, FINISH } from '../../redux/actions/types';
@@ -39,21 +40,28 @@ const login = ({navigation}) => {
                     </View>
                 )
             }
-            <TextInput style={styles.input} placeholder="email address"
-            onChangeText={(email) => {
+           <Container>
+               <Content>
+               <Form>
+            <Item floatingLabel>
+              <Label>Email</Label>
+              <Input onChangeText={(email) => {
                 setEmail(email)
             }} value={email} 
             onFocus={() => {handleFocus()}} 
             onBlur={() => {handleBlur()}}/>
-            <TextInput style={styles.input} placeholder="password"
-            onChangeText={(password) => {
+            </Item>
+
+            <Item floatingLabel last>
+              <Label>Password</Label>
+              <Input onChangeText={(password) => {
                 setPassword(password)
             }} value={password} secureTextEntry={true} 
             onFocus={() => {handleFocus()}} 
             onBlur={() => {handleBlur()}}/>
+            </Item>
 
-            <Button style={styles.btn} title="Login" 
-            onPress={() => {
+            <Button style={styles.loginBtn} full primary onPress={() => {
                 if (!email) {
                     Alert.alert('Type your email!')
                 }
@@ -78,9 +86,15 @@ const login = ({navigation}) => {
                         Alert.alert(err)
                     })
                 }
-            }}/>
-            <Button title="Need an account?" 
-            onPress={() => navigation.navigate('SignUp')}/>
+            }}>
+                  <Text style={styles.loginTxt}>Login</Text>
+                  <Icon name="arrow-forward" type="MaterialIcons"/>
+            </Button>
+                <Text style={styles.needAnAccount} 
+                onPress={() => navigation.navigate('SignUp')}>Need an account?</Text>
+          </Form>
+               </Content>
+           </Container>
         </SafeAreaView>
             </TouchableWithoutFeedback>
     )
@@ -89,17 +103,21 @@ const styles = StyleSheet.create({
     container: {
         flex: 1
     },
-    input: {
-        borderWidth: 1,
-        margin: 10,
-        padding: 10
-    },
-    btn: {
-        borderWidth: 1,
-        margin: 5
+    loginBtn: {
+        marginTop:20,
+        marginBottom:5
     },
     img: {
         width: 'auto'
+    },
+    loginTxt:{
+        color:'white',
+        fontWeight:"bold"
+    },
+    needAnAccount: {
+        alignSelf:"center",
+        color:"blue",
+        marginTop:5
     }
 })
 export default login
